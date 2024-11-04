@@ -1,28 +1,19 @@
-FROM ubuntu:20.04
+# Use the base image
+FROM nathanhess/slurm:full
 
-# Install necessary dependencies
+# Install SSH server
 RUN apt-get update && \
-    apt-get install -y \
-    build-essential \
-    munge \
-    libmunge-dev \
-    slurm-wlm \
-    slurm-client \
-    slurm-wlm-basic-plugins \
-    curl \
-    vim
+    apt-get install -y openssh-server && \
+    mkdir /var/run/sshd
 
-# Configure Munge for authentication
-RUN /usr/sbin/create-munge-key && \
-    chown -R munge: /etc/munge /var/lib/munge /var/log/munge && \
-    chmod 0700 /etc/munge /var/lib/munge /var/log/munge
+# Create a user for SSH access
+RUN useradd -ms /bin/bash dockeruser && \
+    echo 'dockeruser:dockerpassword' | chpasswd && \
+    sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
 
-# Configure SLURM
-COPY slurm.conf /etc/slurm-llnl/slurm.conf
-RUN mkdir -p /var/spool/slurmctld && \
-    chown slurm: /var/spool/slurmctld && \
-    mkdir -p /var/log/slurm && \
-    chown slurm: /var/log/slurm
+# Expose SSH port
+EXPOSE 22
 
-# Start services
-CMD /usr/sbin/munged && /usr/sbin/slurmctld && /usr/sbin/slurmd && tail -f /dev/null
+# Start SSH service
+CMD ["/usr/sbin/sshd", "-D"]
