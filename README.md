@@ -1,5 +1,5 @@
 
-# SLURM Docker Testing & Demo
+# SLURM Testing & Demo via Docker
 
 This repository demonstrates how to test SLURM job submissions locally using Docker. It includes examples for running basic SLURM jobs, executing Python scripts, and training a CNN on the MNIST dataset.
 
