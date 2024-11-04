@@ -1,18 +1,40 @@
-# slurm-docker-testing
- testing-slurm-via-local-docker
 
-docker build -t slurm-docker .
-docker run -d --name slurm-container --privileged slurm-docker
+# SLURM Docker Testing
 
+This repository demonstrates how to test SLURM job submissions locally using Docker. It includes examples for running basic SLURM jobs, executing Python scripts, and training a CNN on the MNIST dataset.
 
-# Alternative 
-docker pull nathanhess/slurm:full
+## Getting Started
 
-docker run -it --rm nathanhess/slurm:full
+### Building and Running SLURM Docker Container
 
-## Create a SLURM Job Script
+1. Build the Docker image:
+   ```bash
+   docker build -t slurm-docker .
+   ```
 
-```
+2. Run the Docker container:
+   ```bash
+   docker run -d --name slurm-container --privileged slurm-docker
+   ```
+
+### Alternative: Using Pre-built SLURM Image
+
+1. Pull the SLURM Docker image:
+   ```bash
+   docker pull nathanhess/slurm:full
+   ```
+
+2. Run the Docker container:
+   ```bash
+   docker run -it --rm nathanhess/slurm:full
+   ```
+
+## Creating and Submitting a SLURM Job
+
+### Create a SLURM Job Script
+
+Create a basic SLURM job script to print "Hello, World":
+```bash
 cat <<EOF > myjobscript.sh
 #!/bin/bash
 #SBATCH --job-name=test_job            # Job name
@@ -25,25 +47,33 @@ echo "Hello, World from SLURM job!"
 EOF
 ```
 
-## Make the Script Executable
-```
+### Make the Script Executable
+
+```bash
 chmod +x myjobscript.sh
 ```
-## Submit the Job to SLURM
-```
+
+### Submit the Job
+
+```bash
 sbatch myjobscript.sh
 ```
 
-```
+### Check Job Queue
+
+```bash
 squeue
 ```
-## Output
-output.txt
 
+### View Output
 
-## Create a Python File
+Output will be saved in `output.txt`.
 
-```
+## Running a Python Script with SLURM
+
+### Create a Python Script
+
+```bash
 cat <<EOF > my_python_script.py
 import time
 
@@ -55,12 +85,15 @@ print("Python script completed after 5 seconds!")
 EOF
 ```
 
-```
-chmod +x my_python_script.py
+### Make the Python Script Executable
 
+```bash
+chmod +x my_python_script.py
 ```
-## Modify the SLURM Job Script to Run the Python Script
-```
+
+### Modify SLURM Job Script to Run Python Script
+
+```bash
 cat <<EOF > myjobscript.sh
 #!/bin/bash
 #SBATCH --job-name=python_job          # Job name
@@ -74,18 +107,37 @@ python3 my_python_script.py
 EOF
 ```
 
+### Submit the Job
 
-# for MNIST Dataset
+```bash
+sbatch myjobscript.sh
+```
 
+### Check Job Queue
+
+```bash
+squeue
+```
+
+## Running a CNN on MNIST Dataset
+
+### Set Up Environment
+
+Run the following commands inside the container:
+```bash
 docker run -u root -it --rm nathanhess/slurm:full
-
-```
-apt-get update
-apt-get install -y python3-pip
-pip3 install tensorflow
 ```
 
-```
+1. Update and install dependencies:
+   ```bash
+   apt-get update
+   apt-get install -y python3-pip
+   pip3 install tensorflow
+   ```
+
+### Create and Submit SLURM Script
+
+```bash
 cat <<EOF > run_cnn_mnist.sh
 #!/bin/bash
 #SBATCH --job-name=cnn_mnist         # Job name
@@ -102,11 +154,13 @@ python3 /home/docker/cnn_mnist.py
 EOF
 ```
 
-```
+Submit the job:
+```bash
 sbatch run_cnn_mnist.sh
-
 ```
 
-```
+### Check Job Queue
+
+```bash
 squeue
 ```
