@@ -15,6 +15,7 @@ This repository demonstrates how to test SLURM job submissions locally using Doc
 2. Run the Docker container:
    ```bash
 docker run -d -p 2222:22 --name slurm-ssh-container slurm-docker
+docker run -d -p 2222:22 --name slurm-ssh-container custom-slurm-ssh
 
    ```
 
@@ -28,6 +29,7 @@ docker run -d -p 2222:22 --name slurm-ssh-container slurm-docker
 2. Run the Docker container:
    ```bash
    docker run -it --rm nathanhess/slurm:full
+   docker run -it -u root -v .:/home/docker/ --rm nathanhess/slurm:full
    ```
 
 ## Creating and Submitting a SLURM Job
